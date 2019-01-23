@@ -1,6 +1,6 @@
 # GPIO Expander with DHT22 (temp and humidity)  
 By: Marshall Wingerson  
-For: xCraft, Coeur D'alene, ID, 83814  
+For: xCraft Enterprises, LLC  
 
 ## Arduino Uno Pinout
  Arduino 0 - not connected  
