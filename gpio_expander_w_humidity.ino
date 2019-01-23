@@ -6,6 +6,8 @@
 
 #include "DHT.h"
 
+//#define DEBUG
+
 #define DHTPIN 2     // what digital pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 
@@ -57,21 +59,18 @@ float humidity;
 float temperature;
 
 void initTimers(){
-  //Serial.println("Initializing timers");
   lastLED = millis();
-  lastLED = lastGPIO;
-  lastLED = lastGPIO;
+  lastGPIO = lastLED;
+  lastSerial = lastLED;
+  lastHumidity = lastLED;
 }
 
 void initSerial(){	
   Serial.begin(115200);
-  Serial.println("Starting xCraft GPIO Expander\n\rBy: Marshall Wingerson");
+  Serial.println("xCraft GPIO Expander V 0.2\n\rBy: Marshall Wingerson");
 }
 
 void initGPIO(){
-
-	//Serial.println("Initializing GPIO");
-
 	blinkOn = false;
 
 	pinMode(LED_BUILTIN, OUTPUT);
@@ -98,12 +97,14 @@ void SendDatHumidity(){
 	Serial.println(temperature);
 }
 
-char gpioStatus(int pin){
-
+void gpioStatus(int pin){
 	uint8_t bitmask = digitalPinToBitMask(pin);
 	uint8_t port = digitalPinToPort(pin);
 
-	return (*portOutputRegister(port) & bitmask) ? '1' : '0';
+	if((*portOutputRegister(port) & bitmask)) 
+		Serial.println("1\r\n");
+	else
+		Serial.println("0\r\n");
 }
 
 void LEDSrv(){
@@ -113,7 +114,6 @@ void LEDSrv(){
 }
 
 void GPIOSrv(){
-	//Serial.println("In GPIOSrv()");
 	if(buffRdy){
 		buffRdy = false;
 
@@ -140,20 +140,19 @@ void GPIOSrv(){
 			digitalWrite(GPIO_PIN_5, LOW);
 
 		else if((String)buffer == gpioStr11)
-			Serial.println(gpioStatus(GPIO_PIN_1));
+			gpioStatus(GPIO_PIN_1);
 		else if((String)buffer == gpioStr12)
-			Serial.println(gpioStatus(GPIO_PIN_2));
+			gpioStatus(GPIO_PIN_2);
 		else if((String)buffer == gpioStr13)
-			Serial.println(gpioStatus(GPIO_PIN_3));
+			gpioStatus(GPIO_PIN_3);
 		else if((String)buffer == gpioStr14)
-			Serial.println(gpioStatus(GPIO_PIN_4));
+			gpioStatus(GPIO_PIN_4);
 		else if((String)buffer == gpioStr15)
-			Serial.println(gpioStatus(GPIO_PIN_5));
-		else if((String)buffer == gpioStr16){
+			gpioStatus(GPIO_PIN_5);
+		else if((String)buffer == gpioStr16)
 			SendDatHumidity();
-		}
 		else
-			Serial.println("Unrecognized command!");
+			Serial.println("Error: Unrecognized command!\r\n");
 
 		clearbuff();
 	}
@@ -161,10 +160,6 @@ void GPIOSrv(){
 
 void serialSrv(){
 	char tempByte;
-
-	//Serial.println("in serialSrv()");
-	//Serial.print("buff: ");
-	//Serial.println(buffer);
 
 	lastSerial = millis();
 	if(Serial.available() == 0){
@@ -174,7 +169,9 @@ void serialSrv(){
 
 	tempByte = Serial.read();
 
-	Serial.print(tempByte);
+	#ifdef DEBUG
+		Serial.print(tempByte);
+	#endif
 
 	//end of string
 	if(tempByte == '\r'){
@@ -186,21 +183,12 @@ void serialSrv(){
 		return;
 	}
 
-	// if(tempByte == '\n')
-	// 	Serial.println("Ignoring NL");
-	// else
-		buffer[buffIt++] = tempByte;
+	buffer[buffIt++] = tempByte;
 }
 
 void humiditySrv(){
   humidity = dht.readHumidity();
   temperature = dht.readTemperature(true);
-
-  //Serial.println("Got new sesor values!!!");
-  //Serial.print("Humidity: ");
-  //Serial.println(humidity);
-  //Serial.print("Temp: ");
-  //Serial.println(temperature);
 }
 
 void setup() {
@@ -208,12 +196,10 @@ void setup() {
   initSerial();
   initGPIO();
 
-  //Serial.println("Initializing humidity Sensor AM2302 - DHT22");
   dht.begin();
 
   initTimers();
 
-  //Serial.println("Starting loop()");
  }
 
 void loop() {
@@ -237,6 +223,7 @@ void loop() {
   if((currTime - lastHumidity) > HUMID_DELAY){
   	lastHumidity = currTime;
   	humiditySrv();
+
   }
 }
 
