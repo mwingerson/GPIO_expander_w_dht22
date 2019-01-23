@@ -102,9 +102,9 @@ void gpioStatus(int pin){
 	uint8_t port = digitalPinToPort(pin);
 
 	if((*portOutputRegister(port) & bitmask)) 
-		Serial.println("1\r\n");
+		Serial.println("1");
 	else
-		Serial.println("0\r\n");
+		Serial.println("0");
 }
 
 void LEDSrv(){
@@ -152,7 +152,7 @@ void GPIOSrv(){
 		else if((String)buffer == gpioStr16)
 			SendDatHumidity();
 		else
-			Serial.println("Error: Unrecognized command!\r\n");
+			Serial.println("Error: Unrecognized command!");
 
 		clearbuff();
 	}
@@ -177,7 +177,8 @@ void serialSrv(){
 	if(tempByte == '\r'){
 		//Serial.println("Terminating string");
 		buffer[buffIt] = 0;
-		Serial.read();
+	
+		//Serial.read();
 		buffRdy = true;
 		buffIt = 0;
 		return;

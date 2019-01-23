@@ -28,10 +28,18 @@ set 6  clr 6  stat 6
 set 7  clr 7  stat 7  
 humid 
 
-'set X' commands set the GPIO channel(x) to HIGH  
-'clr X' commands set the GPIO channel(x) to LOW  
+'set X' commands set the GPIO channel(x) to HIGH
+        - X - GPIO channel to set. Value range <3-7>  
+
+'clr X' commands set the GPIO channel(x) to LOW 
+        - X - GPIO channel to clear. Value range <3-7>  
+
 'stat X' commands return '1' if the channel is set to HIGH or returns '0' if the channel is set to LOW  
-'humid' returns the temperature in fahrenheit and humidity in percent in floating point numbers  
+        - X - GPIO channel to request the state of. Value range <3-7> 
+
+'humid' returns the humidity in percent and then temperature in fahrenheit in floating point numbers
+        - first line returned is humidity
+        - second line returned is temperature in fahrenheit 
 
 
 
