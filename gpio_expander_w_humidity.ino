@@ -14,8 +14,8 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 #define LED_DELAY 250	//millisseconds
-#define GPIO_DELAY 100
-#define SERIAL_DELAY 100
+#define GPIO_DELAY 10
+#define SERIAL_DELAY 1
 #define HUMID_DELAY 2000
 
 #define GPIO_POLARITY HIGH
